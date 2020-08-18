@@ -1,0 +1,34 @@
+{
+    "temp_index": "items-temp",
+    "final_index": "items-final",
+    "index_type": "item",
+    "index_alias": "items",
+    "elasticsearch": {
+        "host": "elasticsearch:9200"
+    },
+    "redis": {
+        "host": "redis",
+        "port": 6379
+    },
+    "cron": "0 0 * * *",
+    "AddOns": [],
+    "startOnFirstInit": true,
+    "repositories": [
+        {
+            "type": "Wocat",
+            "name": "wocat_technologies",
+            "startPage": 0,
+            "allCores": false,
+            "itemsEndPoint": "https://qcat.wocat.net/en/api/v2/questionnaires/",
+            "code": "?type=technologies"
+        },
+        {
+            "type": "Wocat",
+            "name": "wocat_approaches",
+            "startPage": 0,
+            "allCores": false,
+            "itemsEndPoint": "https://qcat.wocat.net/en/api/v2/questionnaires/",
+            "code": "?type=approaches"
+        }
+    ]
+}

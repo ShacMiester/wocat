@@ -1,0 +1,96 @@
+version: "3.1"
+services:
+  arena:
+    container_name: arena
+    working_dir: /backend/arena
+    restart: always
+    image: node
+    command: "npm run install_and_run"
+    ports:
+      - 127.0.0.1:4567:4567
+    volumes:
+      - ../backend:/backend
+    depends_on:
+      - redis
+    links:
+      - redis
+  server:
+    container_name: server
+    working_dir: /backend/server
+    restart: always
+    image: node
+    command: "npm run install_and_run"
+    ports: 
+      - 127.0.0.1:3000:3000
+    volumes:
+      - ../backend:/backend
+    depends_on:
+      - elasticsearch
+    links:
+      - elasticsearch
+  harvestor:
+    container_name: harvestor
+    working_dir: /backend/harvest
+    restart: always
+    image: node
+    command: "npm run install_and_run"
+    volumes:
+      - ../backend:/backend
+    depends_on:
+      - elasticsearch
+      - redis
+    links:
+      - elasticsearch
+      - redis
+  angular_nginx:
+    container_name: angular_nginx
+    image: angular_nginx
+    build: angularBuild
+    restart: always
+    volumes:
+      - ../frontend:/frontend
+      - ./default.conf:/etc/nginx/sites-available/default
+    ports:
+      - 8080:80
+    depends_on:
+      - elasticsearch
+      - kibana
+    links:
+      - elasticsearch
+      - kibana
+  redis:
+    container_name: redis
+    image: redis
+    restart: always
+    volumes:
+      - ./redisData:/data
+  elasticsearch:
+    image: elasticsearch:6.6.1
+    container_name: elasticsearch
+    restart: always
+    ports:
+      - 127.0.0.1:9200:9200
+      - 127.0.0.1:9300:9300
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./esData:/usr/share/elasticsearch/data
+      - ./esConfig:/usr/share/elasticsearch/config
+  kibana:
+    container_name: kibana
+    restart: always
+    image: kibana:6.6.1
+    ports:
+      - 127.0.0.1:5601:5601
+    depends_on:
+      - elasticsearch
+    links:
+      - elasticsearch
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200

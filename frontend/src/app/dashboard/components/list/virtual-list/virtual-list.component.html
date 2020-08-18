@@ -1,0 +1,37 @@
+<!--
+          * [itemSize] will help this component to render the list in a good way,
+          * however when giving it large nmber (920 in our case) it will render
+          * only one element in the viewport and add huge space between the elements
+          * I just choose ~randomly ~20 to divide on
+         -->
+<mat-list>
+  <cdk-virtual-scroll-viewport [itemSize]="
+      listData?.length > 50 ? listData?.length / 20 : listData?.length
+    " class="viewport w-100">
+    <div *cdkVirtualFor="let item of listData" (click)="clickOnKey(item.key)" class="item listHover">
+      <mat-list-item class="p-1">
+        <ng-container *ngIf="!isSmall">
+          <span class="lists_counts">
+            {{ ((item.doc_count / totalItems) * 100).toFixed(2) }}%
+          </span>
+          <i class="arrow right arrow-warning"></i>
+        </ng-container>
+
+        <div  class="w-100">
+          {{ item.key }}
+          <small *ngIf="isSmall">
+            ( {{ ((item.doc_count / totalItems) * 100).toFixed(2) }}% )
+          </small>
+          <span class="spacer"></span>
+          <small class="doc-count" style="float: right;color: #6a6a6a;">
+            {{ item.doc_count }}
+          </small>
+          <div class="progress">
+            <div class="progress-bar bg-primary progress-bar-striped" role="progressbar"
+              [ngStyle]="{ width: (item.doc_count / totalItems) * 100 + '%' }"></div>
+          </div>
+        </div>
+      </mat-list-item>
+    </div>
+  </cdk-virtual-scroll-viewport>
+</mat-list>
